@@ -77,14 +77,19 @@ public class Controller implements Initializable {
     }
 
     private void enterData() {
-        book = new BookToRead(textFieldAuthor, textFieldTitle);
-        System.out.println(book.toString());
         startTransaction();
+        if(textFieldAuthor.getText().trim().equals("") && textFieldTitle.getText().trim().equals("")){
+            session.close();
+            return;
+        }else {
+            book = new BookToRead(textFieldAuthor, textFieldTitle);
+        }
+        System.out.println(book.toString());
+
         try {
             session.save(book);
             session.getTransaction().commit();
-            textFieldAuthor.setText("");
-            textFieldTitle.setText("");
+            clareTextFields();
         } catch(HibernateException e) {
             System.out.println(e.getMessage());
         } finally {
@@ -108,15 +113,15 @@ public class Controller implements Initializable {
         String a = textFieldAuthor.getText();
         String t = textFieldTitle.getText();
         System.out.println( a + t );
-        if(textFieldAuthor.getText() == "" && textFieldTitle.getText() == "") {
+        if(textFieldAuthor.getText().trim().equals("") && textFieldTitle.getText().trim().equals("")) {
             session.close();
+            return;
         } else {
             book.setAuthor(a);
             book.setTitle(t);
             session.update(book);
             session.getTransaction().commit();
-            textFieldAuthor.setText("");
-            textFieldTitle.setText("");
+            clareTextFields();
         }
         System.out.println(book);
         session.close();
@@ -157,11 +162,17 @@ public class Controller implements Initializable {
             session.delete(book1);
             session.getTransaction().commit();
             System.out.println("refreshed");
+            clareTextFields();
         } catch (HibernateException exception) {
             System.out.println(exception.getMessage());
         } finally {
             session.close();
         }
+    }
+
+    private void clareTextFields() {
+        textFieldAuthor.setText("");
+        textFieldTitle.setText("");
     }
 
 }

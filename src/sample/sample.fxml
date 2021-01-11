@@ -14,7 +14,8 @@
       <Button fx:id="submit" layoutX="79.0" layoutY="336.0" mnemonicParsing="false" onAction="#enterToList" prefHeight="25.0" prefWidth="103.0" text="Enter to list" />
       <Label layoutX="22.0" layoutY="283.0" text="Title" />
       <ListView fx:id="listView" layoutX="79.0" layoutY="23.0" onMouseClicked="#listClick" prefHeight="200.0" prefWidth="474.0" />
-      <Button layoutX="450.0" layoutY="336.0" mnemonicParsing="false" onAction="#deleteEntry" prefHeight="25.0" prefWidth="103.0" text="Delete selected" />
-      <Button layoutX="265.0" layoutY="336.0" mnemonicParsing="false" onAction="#updateEntry" prefHeight="25.0" prefWidth="103.0" text="Update selected" />
+      <Button layoutX="322.0" layoutY="336.0" mnemonicParsing="false" onAction="#deleteEntry" prefHeight="25.0" prefWidth="103.0" text="Delete selected" />
+      <Button layoutX="197.0" layoutY="336.0" mnemonicParsing="false" onAction="#updateEntry" prefHeight="25.0" prefWidth="103.0" text="Update selected" />
+      <Button layoutX="450.0" layoutY="336.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="103.0" text="Button" />
    </children>
 </AnchorPane>
