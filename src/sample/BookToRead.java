@@ -12,7 +12,7 @@ public class BookToRead {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    int id;
+    Integer id;
 
     @Column(name = "author")
     private String author;
@@ -27,7 +27,7 @@ public class BookToRead {
         this.title = textFieldTitle.getText();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

@@ -12,7 +12,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -20,7 +19,7 @@ import java.util.ResourceBundle;
 public class Controller implements Initializable {
 
     @FXML
-    Button submit;
+    Button add;
     @FXML
     TextField textFieldAuthor, textFieldTitle;
     @FXML
@@ -58,45 +57,45 @@ public class Controller implements Initializable {
         try {
             query = session.createQuery("from BookToRead");
             booksList = query.list();
-            Iterator iterator = booksList.iterator();
-            while(iterator.hasNext()) {
-                book = (BookToRead) iterator.next();
-                System.out.println(book);
-                observableList.add(book);
+            for (BookToRead bookToRead : booksList) {
+                System.out.println(bookToRead);
+                observableList.add(bookToRead);
             }
         } catch (HibernateException e) {
             System.out.println(e.getMessage());
         }
-        session.close();
     }
 
     @FXML
-    public void enterToList(ActionEvent e) {
+    public void addToList(ActionEvent e) {
         System.out.println("enter to list");
-        enterData();
+        addBook();
     }
 
-    private void enterData() {
-        startTransaction();
+    private void addBook() {
         if(textFieldAuthor.getText().trim().equals("") && textFieldTitle.getText().trim().equals("")){
-            session.close();
             return;
         }else {
             book = new BookToRead(textFieldAuthor, textFieldTitle);
+            observableList.add(book);
+            clareTextFields();
         }
         System.out.println(book.toString());
-
-        try {
-            session.save(book);
-            session.getTransaction().commit();
-            clareTextFields();
-        } catch(HibernateException e) {
-            System.out.println(e.getMessage());
-        } finally {
-            session.close();
-        }
-        observableList.add(book);
         System.out.println("book saved");
+    }
+
+    @FXML
+    public void saveChanges(ActionEvent e) {
+        for(BookToRead it : observableList) {
+            Integer id = it.getId();
+            if(id != null) {
+                session.update(it);
+            } else {
+                session.save(it);
+            }
+        }
+        session.getTransaction().commit();
+        listView.refresh();
     }
 
     @FXML
@@ -109,33 +108,34 @@ public class Controller implements Initializable {
 
     @FXML
     public void updateEntry(ActionEvent e) {
-        startTransaction();
+        Integer id = book.getId();
         String a = textFieldAuthor.getText();
         String t = textFieldTitle.getText();
         System.out.println( a + t );
         if(textFieldAuthor.getText().trim().equals("") && textFieldTitle.getText().trim().equals("")) {
-            session.close();
             return;
         } else {
             book.setAuthor(a);
             book.setTitle(t);
-            session.update(book);
-            session.getTransaction().commit();
+            try {
+                observableList.set(id, book);
+            } catch (IndexOutOfBoundsException ex) {
+                System.out.println(ex.getMessage());
+            }
             clareTextFields();
         }
-        System.out.println(book);
-        session.close();
         listView.refresh();
+        System.out.println(book);
     }
 
     @FXML
     public void deleteEntry(ActionEvent e) {
         System.out.println(book);
-        alert(e);
+        alertDelete(e);
     }
 
     @FXML
-    public void alert(ActionEvent event){
+    public void alertDelete(ActionEvent event){
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
         alert.setHeaderText("Confirm your choice");
@@ -155,19 +155,17 @@ public class Controller implements Initializable {
     }
 
     private void deleteSelectedBook() {
-        startTransaction();
+        //startTransaction();
+        Integer id = book.getId();
         try {
-            BookToRead book1 = session.get(BookToRead.class, book.getId());
-            System.out.println("delete book id " + book.getId());
-            session.delete(book1);
-            session.getTransaction().commit();
+            observableList.remove(id);
+            session.delete(book);
             System.out.println("refreshed");
             clareTextFields();
         } catch (HibernateException exception) {
             System.out.println(exception.getMessage());
-        } finally {
-            session.close();
         }
+        listView.refresh();
     }
 
     private void clareTextFields() {
